@@ -146,8 +146,3 @@ uint8_t RTC8564::years(uint8_t format) const {
 bool RTC8564::century() const {
 	return _century;
 }
-
-
-// Preinstantiate Objects //////////////////////////////////////////////////////
-
-RTC8564 Rtc = RTC8564();

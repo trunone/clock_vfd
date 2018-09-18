@@ -6,7 +6,6 @@
 #include <ModbusMaster.h>
 
 const unsigned char ver[] = "07a";
-#define SW3 1                    // SW3を実装していない:0 実装している:1　Rev.2.1のみ有効
 #define  TIMER1_INTTIME  500     // タイマインタラプト周期
 #define  COLON_PWM      0x20     // : 点灯用PWM高さ
 #define  COLON_BRIGHT   0x04     // : の明るさ。値が大きいほど明るくなる。
@@ -75,13 +74,7 @@ unsigned char mode;
 // SW定義
 #define BTN1 14
 #define BTN2 15
-
-#if ((SHIELD_REV == 210) && (SW3 == 0))
-#define BTN3 15
-#else
 #define BTN3 16
-#endif
-
 
 unsigned int itm_firstf;
 unsigned char BTN1_chkw;
@@ -126,6 +119,7 @@ void disp_colon_leonardo(unsigned char disp_count, unsigned char *portf);
 void int_count(void);
 void rtc_chk(void);
 
+RTC8564 Rtc;
 ModbusMaster node;
 
 void setup()
@@ -267,10 +261,14 @@ void disp_datamake(void) {
   if (count >= (second_counterw / 2)) {
     // ピリオド消灯処理
     piriod[0] = 0x00;
+    piriod[2] = 0x00;
+    piriod[4] = 0x00;
   }
   else {
     // ピリオド点灯処理
     piriod[0] = 0x01;
+    piriod[2] = 0x01;
+    piriod[4] = 0x01;
 
     // 時計あわせ時桁点滅処理
     if ( (mode == MODE_ADJ_HOUR_WAIT) || (mode == MODE_ADJ_HOUR)
@@ -293,12 +291,9 @@ void disp_datamake(void) {
        || (mode == MODE_ADJ_YEAR_WAIT) || (mode == MODE_ADJ_YEAR)
        || (mode == MODE_ADJ_MONTH_WAIT) || (mode == MODE_ADJ_MONTH)
        || (mode == MODE_ADJ_DATE_WAIT) || (mode == MODE_ADJ_DATE) ) {
+    piriod[0] = 0x01;
     piriod[2] = 0x01;
     piriod[4] = 0x01;
-  }
-  else {
-    piriod[2] = 0x00;
-    piriod[4] = 0x00;
   }
 
   noInterrupts();      // 割り込み禁止

@@ -37,6 +37,4 @@ public:
 	bool century() const;
 };
 
-extern RTC8564 Rtc;
-
 #endif
